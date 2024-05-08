@@ -14,6 +14,12 @@ TensorRT 优化与性能：
 - 动态张量显存： 更大限度减少显存占用，并高效地为张量重复利用内存；
 - 多流执行：     用于并行处理多个输入流的可扩展设计。
 
+### 2. 基础使用
 
+- 1> [实现一个最简单的神经网络](https://github.com/cvdong/TRT/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_1.cpp)
+- 2> [模型生成和推理](https://github.com/cvdong/TRT/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_2.cpp)
+- 3> [动态shape推理](https://github.com/cvdong/TRT/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_3.cpp)
 
+**深入参考**： [https://github.com/wang-xinyu/tensorrtx/tree/master](https://github.com/wang-xinyu/tensorrtx/tree/master)
 
+![Alt text](./workspace/tensorRTx.jpg)
