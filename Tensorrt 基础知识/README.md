@@ -19,6 +19,7 @@ TensorRT 优化与性能：
 - 1> [实现一个最简单的神经网络](https://github.com/cvdong/TRT/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_1.cpp)
 - 2> [模型生成和推理](https://github.com/cvdong/TRT/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_2.cpp)
 - 3> [动态shape推理](https://github.com/cvdong/TRT/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_3.cpp)
+- 4> [onnx解析与build](https://github.com/cvdong/TensorRT_dong/blob/main/Tensorrt%20%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/src/base_src_4.cpp)
 
 **深入参考**： [https://github.com/wang-xinyu/tensorrtx/tree/master](https://github.com/wang-xinyu/tensorrtx/tree/master)
 
