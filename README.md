@@ -23,14 +23,14 @@ TensorRT 优化与性能：
 - 4> [onnx解析与build](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_4.cpp)
 - 5> [onnx源码解析](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_5.cpp)
 
-**TRT api 搭建模型 深入参考**：
+**TRT api 搭建模型 参考**：
 [https://github.com/wang-xinyu/tensorrtx/tree/master](https://github.com/wang-xinyu/tensorrtx/tree/master)
 
 ![Alt text](./workspace/tensorRTx.jpg)
 
 ---
 
-**ONNX -> Engine 搭建模型 深度参考**：
+**ONNX -> Engine 搭建模型 参考**：
 [https://github.com/shouxieai/tensorRT_Pro](https://github.com/shouxieai/tensorRT_Pro)
 
 ![Alt text](./workspace/tensorrtPro.png)
