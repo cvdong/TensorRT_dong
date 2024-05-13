@@ -1,21 +1,10 @@
-·// nvonnxparser已经被nvidia给开源了，
-// 可以使用官方自带的解析器，也可以使用源代码进行编译
-// 使用源码可以更为便捷实现插件的编写
-
-// @dong 整理归档 2024.5
-
 
 // tensorRT include
 // 编译用的头文件
 #include <NvInfer.h>
 
 // onnx解析器的头文件
-
-
 #include <onnx-tensorrt-release-8.0/NvOnnxParser.h>
-
-
-
 
 // 推理用的运行时头文件
 #include <NvInferRuntime.h>
@@ -112,7 +101,7 @@ bool build_model(){
 
     // 将模型序列化，并储存为文件
     nvinfer1::IHostMemory* model_data = engine->serialize();
-    FILE* f = fopen("engine.trtmodel", "wb");
+    FILE* f = fopen("test.engine", "wb");
     fwrite(model_data->data(), 1, model_data->size(), f);
     fclose(f);
 
@@ -127,7 +116,95 @@ bool build_model(){
     return true;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+vector<unsigned char> load_file(const string& file){
+    ifstream in(file, ios::in | ios::binary);
+    if (!in.is_open())
+        return {};
+
+    in.seekg(0, ios::end);
+    size_t length = in.tellg();
+
+    std::vector<uint8_t> data;
+    if (length > 0){
+        in.seekg(0, ios::beg);
+        data.resize(length);
+
+        in.read((char*)&data[0], length);
+    }
+    in.close();
+    return data;
+}
+
+void inference(){
+
+    TRTLogger logger;
+    auto engine_data = load_file("test.engine");
+    nvinfer1::IRuntime* runtime   = nvinfer1::createInferRuntime(logger);
+    nvinfer1::ICudaEngine* engine = runtime->deserializeCudaEngine(engine_data.data(), engine_data.size());
+    if(engine == nullptr){
+        printf("Deserialize cuda engine failed.\n");
+        runtime->destroy();
+        return;
+    }
+
+    nvinfer1::IExecutionContext* execution_context = engine->createExecutionContext();
+    cudaStream_t stream = nullptr;
+    cudaStreamCreate(&stream);
+
+    float input_data_host[] = {
+        // batch 0
+        1,   1,   1,
+        1,   1,   1,
+        1,   1,   1,
+
+        // batch 1
+        -1,   1,   1,
+        1,   0,   1,
+        1,   1,   -1
+    };
+    float* input_data_device = nullptr;
+
+    // 3x3输入，对应3x3输出
+    int ib = 2;
+    int iw = 3;
+    int ih = 3;
+    float output_data_host[ib * iw * ih];
+    float* output_data_device = nullptr;
+    cudaMalloc(&input_data_device, sizeof(input_data_host));
+    cudaMalloc(&output_data_device, sizeof(output_data_host));
+    cudaMemcpyAsync(input_data_device, input_data_host, sizeof(input_data_host), cudaMemcpyHostToDevice, stream);
+
+    // 明确当前推理时，使用的数据输入大小
+    execution_context->setBindingDimensions(0, nvinfer1::Dims4(ib, 1, ih, iw));
+    float* bindings[] = {input_data_device, output_data_device};
+    bool success      = execution_context->enqueueV2((void**)bindings, stream, nullptr);
+    cudaMemcpyAsync(output_data_host, output_data_device, sizeof(output_data_host), cudaMemcpyDeviceToHost, stream);
+    cudaStreamSynchronize(stream);
+
+    for(int b = 0; b < ib; ++b){
+        printf("batch %d. output_data_host = \n", b);
+        for(int i = 0; i < iw * ih; ++i){
+            printf("%f, ", output_data_host[b * iw * ih + i]);
+            if((i + 1) % iw == 0)
+                printf("\n");
+        }
+    }
+
+    printf("Clean memory\n");
+    cudaStreamDestroy(stream);
+    cudaFree(input_data_device);
+    cudaFree(output_data_device);
+    execution_context->destroy();
+    engine->destroy();
+    runtime->destroy();
+}
+
 int main(){
-    build_model();
+    if(!build_model()){
+        return -1;
+    }
+    inference();
     return 0;
 }
