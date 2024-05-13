@@ -1,3 +1,6 @@
+# 生成插件onnx
+# // @dong 整理归档 2024.5
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -53,7 +56,6 @@ class Model(nn.Module):
         x = self.myselu(x)
         return x
 
-# 这个包对应opset11的导出代码，如果想修改导出的细节，可以在这里修改代码
 # import torch.onnx.symbolic_opset11
 print("对应opset文件夹代码在这里：", os.path.dirname(torch.onnx.__file__))
 
