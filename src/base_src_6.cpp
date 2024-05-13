@@ -4,7 +4,7 @@
 3. Int8EntropyCalibrator的作用，是读取并预处理图像数据作为输入
     - 标定的原理，是通过输入标定图像I，使用参数WInt8推理得到输出结果PInt8，然后不断调整WInt8，使得输出PInt8与PFloat32越接近越好
     - 因此标定时通常需要使用一些图像，正常发布时，一般使用100张图左右即可
-    
+
 4. 常用的Calibrator
    - Int8EntropyCalibrator2
         熵校准选择张量的比例因子来优化量化张量的信息论内容，通常会抑制分布中的异常值。这是当前推荐的熵校准器。默认情况下，校准发生在图层融合之前。推荐用于基于 CNN 的网络。
@@ -54,6 +54,7 @@ using namespace std;
 
 #define checkRuntime(op)  __check_cuda_runtime((op), #op, __FILE__, __LINE__)
 
+
 bool __check_cuda_runtime(cudaError_t code, const char* op, const char* file, int line){
     if(code != cudaSuccess){    
         const char* err_name = cudaGetErrorName(code);    
@@ -63,6 +64,7 @@ bool __check_cuda_runtime(cudaError_t code, const char* op, const char* file, in
     }
     return true;
 }
+
 
 inline const char* severity_string(nvinfer1::ILogger::Severity t){
     switch(t){
@@ -74,6 +76,7 @@ inline const char* severity_string(nvinfer1::ILogger::Severity t){
         default: return "unknow";
     }
 }
+
 
 class TRTLogger : public nvinfer1::ILogger{
 public:
@@ -106,6 +109,7 @@ typedef std::function<void(
     int current, int count, const std::vector<std::string>& files, 
     nvinfer1::Dims dims, float* ptensor
 )> Int8Process;
+
 
 // int8熵校准器：用于评估量化前后的分布改变
 class Int8EntropyCalibrator : public nvinfer1::IInt8EntropyCalibrator2
@@ -223,11 +227,11 @@ static bool exists(const string& path){
 #endif
 }
 
-// 上一节的代码
+
 bool build_model(){
 
-    if(exists("engine.trtmodel")){
-        printf("Engine.trtmodel has exists.\n");
+    if(exists("test.engine")){
+        printf("test.engine has exists.\n");
         return true;
     }
 
@@ -319,7 +323,7 @@ bool build_model(){
 
     // 将模型序列化，并储存为文件
     auto model_data = make_nvshared(engine->serialize());
-    FILE* f = fopen("engine.trtmodel", "wb");
+    FILE* f = fopen("test.engine", "wb");
     fwrite(model_data->data(), 1, model_data->size(), f);
     fclose(f);
 
@@ -374,7 +378,7 @@ vector<string> load_labels(const char* file){
 void inference(){
 
     TRTLogger logger;
-    auto engine_data = load_file("engine.trtmodel");
+    auto engine_data = load_file("test.engine");
     auto runtime   = make_nvshared(nvinfer1::createInferRuntime(logger));
     auto engine = make_nvshared(runtime->deserializeCudaEngine(engine_data.data(), engine_data.size()));
     if(engine == nullptr){
