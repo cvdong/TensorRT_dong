@@ -1,0 +1,80 @@
+1. 如何开发trt plugin
+        - 基于修改onnxparser的做法
+            - 比较繁琐
+            - 如果要配合trtexec的话，就不好用
+    - 直接给予trt的api开发插件 https://github.com/NVIDIA-AI-IOT/tensorrt_plugin_generator
+        - trtpg，用它生成一个plugin的模版代码，里面包含了makefile/cpp/h，以及所有需要实现的函数，并且可以立马编译
+        - 只需要主要填写enqueue函数里面的实现就行了
+        - 通过trtexec 编译模型时，指定--plugins=xxx.so就可以支持这个plugin与onnx的配套
+            - pytorch导出onnx时，需要修改symboic函数，生成对应的node节点
+
+2. 关于int8的问题
+    - int8的ptq/qat
+        - 隐式量化，不被推荐的。新版本会被抛弃，会有替代方案，AMMO来代替
+            - 在没有做更多的工作之前，第一个精度一般都很差
+        - 显式量化，PTQ/QAT，使用pytorch quantization library
+            - 就是计算图中scale的匹配问题
+                - maxpool
+                - concat
+                - add
+                - 多出来的reformat导致性能很差
+                - 方案：
+                    - meituan：他是max(a, b, c)
+                    - 推荐的是，在calibration的时候，使用同一个量化器
+            - 部分量化
+            - 量化算法，基于minmax/histogram
+            - 经验：QAT一般带来的提升比较小（忽略,0.2%），部分量化的PTQ的精度一般比较够用
+                - PTQ的部分量化已经能调到很好的精度和速度平衡了
+                - QAT需要比较大量的effort去finetune。这个是得不偿失的
+    - int8的plugin或者算子开发
+        - 为什么要int8，它解决哪部分问题
+            - int8名字上看，就是比fp16/fp32算的更快
+            - int8只快在gemm上(O2^3)
+            - 经验数据，int8跟fp32比，不能直接认为是4倍
+        - 需要了解一下int8的整个计算pipline
+
+            - input->fp16
+            - output1 = linear(input, weight1, bias1)
+                - input: fp16
+                - weight1: int8
+                - bias: fp16
+                - 需要output1 -> int8 / fp16
+                - output1 = input @ weight1 + bias
+                - output1 = quant(input) @ weight1 + bias
+                    - int8 @ int8 = int32
+                        - 硬件保证的
+                        - 必须这样才能保证精度
+                    - output1 = dequant(int32) + fp16
+                    - output1 = fp16(quant(input) @ weight1) + fp16
+                    - output1 fp16
+                    - output1 = quant(fp16(quant(input) @ weight1) + bias) -> int8
+            
+            - def dequant(int8, scale) -> return fp16
+                - x / scale
+            - def quant(fp16, scale)   -> return int8
+                - x * scale
+
+            - input1: fp16
+            - output1 = quant(fp16(dequant(input) @ weight1) + bias1) -> int8
+            - 
+            - output2 = quant(fp16(output1 @ weight2) + bias2) -> int8
+            -
+            - output3 = fp16(output2 @ weight3) + bias3 -> fp16
+            
+
+            - 其实你只需要关注，你需要什么，比如说我需要input scale或者output scale
+            - 然后就是，scale从哪里来这件事
+            - 然后确定各个部分的数据类型
+            - scale根tensor是绑定关系，他属于tensor
+            - per tensor
+                - weight一般是per tensor
+                - 一般处理办法，就是直接对fp32数据统计绝对值的最大值, scale = abs(weight).max() / 127.0
+            - per channel
+            - 比如，在tensor RT上的plugin我需要scale，怎么来
+                - tensorRT上scale是通过QDQ储存的
+                - 1. 直接通过tensorRT的API拿到的是错的❌，拿不到的
+                    - graph级别的东西，plugin内拿不到
+                - 2. 一般的做法是，直接把qdq，通过onnx编辑工具给储存到plugin到attribute里面
+            - 有理论依据的
+                - 通过python实现一个特定的计算任务
+                - 误差一般有规律，1/127，的倍数

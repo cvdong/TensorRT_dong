@@ -93,7 +93,6 @@ public:
     }
 } logger;
 
-// 上一节的代码
 bool build_model(){
     TRTLogger logger;
 
