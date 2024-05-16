@@ -24,8 +24,9 @@ TensorRT 优化与性能：
 - 5> [onnx源码解析](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_5.cpp)
 - 6> [onnx-trt插件实现编译推理](https://github.com/cvdong/TensorRT_dong/tree/main/src/onnx-plugin)
 - 7> [onnx-trt插件封装实现](https://github.com/cvdong/TensorRT_dong/tree/main/src/onnx-package-plugin)
-- 8> [trt ptq int8量化](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_6.cpp)
-- 9> [trt int8量化思考](https://github.com/cvdong/TensorRT_dong/blob/main/src/%E9%87%8F%E5%8C%96%E6%B5%81%E7%A8%8B%E4%BB%A5%E5%8F%8Aint8%20plugin.txt)
+- 8> [onnx-trt更多插件实现](https://github.com/cvdong/TensorRT_dong/tree/main/src/onnx-package-plugin-2)
+- 9> [trt ptq int8量化](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_6.cpp)
+- 10> [trt int8量化思考](https://github.com/cvdong/TensorRT_dong/blob/main/src/%E9%87%8F%E5%8C%96%E6%B5%81%E7%A8%8B%E4%BB%A5%E5%8F%8Aint8%20plugin.txt)
 
 **TRT api 搭建模型 参考**：
 [https://github.com/wang-xinyu/tensorrtx/tree/master](https://github.com/wang-xinyu/tensorrtx/tree/master)
