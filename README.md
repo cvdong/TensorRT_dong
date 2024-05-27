@@ -42,7 +42,7 @@ TensorRT 优化与性能：
 
 ### 3. 进阶使用
 - 11> [trt resnet 18 build->infer流程](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_7.cpp)
-
+- 12> [trt yolov5 build->infer流程](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_8.cpp)
 
 
 不定时更新，记得star，哦哦！
