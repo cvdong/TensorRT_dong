@@ -359,6 +359,11 @@ void inference(){
     checkRuntime(cudaFreeHost(input_data_host));
     checkRuntime(cudaFree(input_data_device));
     checkRuntime(cudaFree(output_data_device));
+
+
+    // 申请资源 --> 前处理 --> 推理 --> 后处理 --> 释放资源
+
+
 }
 
 
