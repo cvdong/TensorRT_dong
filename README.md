@@ -41,7 +41,7 @@ TensorRT 优化与性能：
 ![Alt text](./workspace/tensorrtPro.png)
 
 ### 3. 进阶使用
-- 11> []()
+- 11> [trt resnet 18 build->infer流程](https://github.com/cvdong/TensorRT_dong/blob/main/src/base_src_7.cpp)
 
 
 

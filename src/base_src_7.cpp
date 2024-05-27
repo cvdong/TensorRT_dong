@@ -316,7 +316,6 @@ void inference(){
     checkRuntime(cudaMemcpyAsync(input_data_device, input_data_host, input_numel * sizeof(float), cudaMemcpyHostToDevice, stream));
 
 
-
     // 3x3输入，对应3x3输出
     const int num_classes = 1000;
 
