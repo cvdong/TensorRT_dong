@@ -289,9 +289,11 @@ void inference(){
 
     // 对应于pytorch的预处理部分
     cv::resize(image, image, cv::Size(input_width, input_height));
+   
     int image_area = image.cols * image.rows;
 
     unsigned char* pimage = image.data;
+
     float* phost_b = input_data_host + image_area * 0;
     float* phost_g = input_data_host + image_area * 1;
     float* phost_r = input_data_host + image_area * 2;
@@ -321,8 +323,8 @@ void inference(){
 
     // output
     float output_data_host[num_classes];
-
     float* output_data_device = nullptr;
+
     checkRuntime(cudaMalloc(&output_data_device, sizeof(output_data_host)));
 
     // 明确当前推理时，使用的数据输入大小
