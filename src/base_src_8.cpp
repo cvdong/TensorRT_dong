@@ -1,7 +1,7 @@
 
 // yolov5 推理代码
 
-// @dong 整理归档 2024.5
+// @dong 整理归档 2024.6
 
 
 // tensorRT include
